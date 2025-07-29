@@ -4,77 +4,152 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Verification</title>
-    <!-- Tailwind CSS CDN for easy styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom font for a clean look */
         body {
             font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        @media (min-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #2d3748;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #8b5cf6;
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #7c3aed;
+            }
+        }
+        .status-success {
+            font-weight: bold;
+            color: #4ade80;
+        }
+        .status-error {
+            font-weight: bold;
+            color: #f87171;
+        }
+        .status-warning {
+            font-weight: bold;
+            color: #fbbf24;
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex items-center justify-center p-4">
-    <div class="bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full border border-gray-700">
-        <h1 class="text-3xl font-bold text-center mb-6 text-purple-400">Discord Verification</h1>
-        <p class="text-gray-400 text-center mb-6">
-            Welcome to the verification page for our Discord server. To ensure a fair and secure environment,
-            we require a quick verification.
-        </p>
-
-        <!-- Privacy Warning and Consent -->
-        <div class="bg-red-800 bg-opacity-30 border border-red-700 text-red-300 p-4 rounded-md mb-6 text-sm">
-            <p class="font-bold mb-2">⚠️ Important Privacy Notice:</p>
-            <p>
-                By proceeding, you consent to the collection of your **Discord User ID**, **IP Address**, and a
-                **Browser Fingerprint (HWID)**. This data is used solely for anti-alt/multi-account detection
-                and server security, similar to services like Double Counter. Your data will be sent to our
-                Discord bot via a secure webhook.
+<body class="bg-gradient-to-br from-gray-950 via-gray-900 to-gray-800 text-gray-100 min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 overflow-y-auto">
+    <div class="bg-gray-800 bg-opacity-90 backdrop-blur-sm p-6 sm:p-8 md:p-10 rounded-2xl shadow-3xl max-w-xl w-full border border-gray-700 transform transition-all duration-300 hover:scale-[1.01] relative overflow-hidden">
+        
+        <div class="absolute inset-0 z-0 opacity-5" style="background-image: radial-gradient(#4a0e70 1px, transparent 1px); background-size: 20px 20px;"></div>
+        
+        <div class="relative z-10">
+            <h1 class="text-5xl font-extrabold text-center mb-6 text-purple-400 drop-shadow-lg leading-tight">Discord Verification</h1>
+            <p class="text-gray-300 text-center mb-8 leading-relaxed text-lg">
+                Welcome to the verification page for our Discord server. To ensure a fair and secure environment,
+                we require a quick verification.
             </p>
-            <p class="mt-2">
-                If you do not agree, please close this page.
-            </p>
+
+            <div class="bg-red-900 bg-opacity-40 border border-red-700 text-red-200 p-5 rounded-lg mb-8 text-base shadow-inner-lg">
+                <p class="font-bold text-xl mb-3 text-red-100">⚠️ IMPORTANT PRIVACY NOTICE:</p>
+                <p class="mb-3">
+                    By proceeding, you consent to the collection of your <span class="font-semibold text-white">Discord User ID</span>, <span class="font-semibold text-white">IP Address</span>, and a
+                    <span class="font-semibold text-white">Browser Fingerprint (HWID)</span>. This data is used solely for anti-alt/multi-account detection
+                    and server security, similar to services like Double Counter. Your data will be sent to our
+                    Discord bot via a secure webhook.
+                </p>
+                <p class="mt-3 text-red-100">
+                    If you do not agree, please close this page.
+                </p>
+            </div>
+
+            <div class="mb-8 p-6 bg-gray-700 rounded-lg border border-gray-600 shadow-xl">
+                <h2 class="text-3xl font-bold text-purple-300 mb-4 text-center">HOW TO GET YOUR DISCORD USER ID</h2>
+                <ol class="list-decimal list-inside text-gray-300 space-y-3 text-lg">
+                    <li>
+                        On Discord, go to **User Settings** (the gear icon <span class="font-bold text-2xl text-white">⚙️</span> next to your username).
+                    </li>
+                    <li>
+                        Navigate to **App Settings > Advanced**.
+                    </li>
+                    <li>
+                        Enable **Developer Mode**.
+                    </li>
+                    <li>
+                        Go back to any Discord server, right-click on your own username (or profile picture), and select **"Copy ID"**.
+                    </li>
+                    <li>
+                        Paste the copied ID into the field below. It should be a long string of numbers.
+                    </li>
+                </ol>
+            </div>
+
+            <div class="mb-6">
+                <label for="discordUserId" class="block text-gray-300 text-xl font-bold mb-3">
+                    Your Discord User ID (Paste Only):
+                </label>
+                <input type="text" id="discordUserId" placeholder="Long-press or Ctrl+V/Cmd+V to paste your ID..."
+                       inputmode="numeric" pattern="[0-9]*" readonly
+                       class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 text-lg placeholder-gray-400">
+                <p id="idError" class="text-red-400 text-sm mt-2 hidden"></p>
+                <p id="pasteInstruction" class="text-yellow-400 text-sm mt-2 hidden">Please paste your Discord User ID here using **long-press** (mobile) or **Ctrl+V** (desktop) / **Cmd+V** (Mac). Do not type manually.</p>
+            </div>
+
+            <div class="mb-6">
+                <label for="freeformInput" class="block text-gray-300 text-xl font-bold mb-3">
+                    Or Paste a Discord ID Here (Demo):
+                </label>
+                <textarea id="freeformInput" placeholder="Paste a Discord ID here. Typing is blocked."
+                          rows="2" readonly
+                          class="shadow-inner appearance-none border border-gray-600 rounded-lg w-full py-3 px-4 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200 text-lg placeholder-gray-400"></textarea>
+                <p id="freeformStatusMessage" class="text-center mt-2 text-base text-gray-400"></p>
+            </div>
+
+            <div class="mb-8 flex items-center">
+                <input type="checkbox" id="consentCheckbox" class="form-checkbox h-6 w-6 text-purple-600 rounded-md focus:ring-purple-500 cursor-pointer border-gray-500 bg-gray-700">
+                <label for="consentCheckbox" class="ml-3 text-gray-300 text-lg select-none">
+                    I understand and consent to the data collection as described above.
+                </label>
+            </div>
+
+            <button id="verifyButton"
+                    class="bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-bold py-3 px-6 rounded-lg w-full text-2xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:from-gray-600 disabled:to-gray-700">
+                Verify My Account
+            </button>
+
+            <p id="statusMessage" class="text-center mt-5 text-xl"></p>
         </div>
-
-        <div class="mb-4">
-            <label for="discordUserId" class="block text-gray-300 text-sm font-bold mb-2">
-                Your Discord User ID:
-            </label>
-            <input type="text" id="discordUserId" placeholder="e.g., 123456789012345678"
-                   class="shadow appearance-none border border-gray-600 rounded-md w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-200">
-            <p class="text-xs text-gray-400 mt-1">
-                (Find this by enabling Developer Mode in Discord, right-clicking your name, and selecting 'Copy ID')
-            </p>
-        </div>
-
-        <div class="mb-6 flex items-center">
-            <input type="checkbox" id="consentCheckbox" class="form-checkbox h-5 w-5 text-purple-600 rounded-md focus:ring-purple-500">
-            <label for="consentCheckbox" class="ml-2 text-gray-300 text-sm">
-                I understand and consent to the data collection as described above.
-            </label>
-        </div>
-
-        <button id="verifyButton"
-                class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg w-full transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled>
-            Verify My Account
-        </button>
-
-        <p id="statusMessage" class="text-center mt-4 text-sm"></p>
     </div>
 
     <script>
-        // IMPORTANT: Replace with your actual Discord Webhook URL.
-        // Keep this URL as secure as possible. For production, consider a backend proxy.
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1399786854844465273/miNJS376DiufBdw2e54fnb1lPkTuhGz94oIPhcnM9-Oqp8C8fcUkrtg36N6pJpKZqklf'; // e.g., 'https://discord.com/api/webhooks/1234567890/abcdefghijklmnopqrstuvwxyz'
+        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1399786854844465273/miNJS376DiufBdw2e54fnb1lPkTuhGz94oIPhcnM9-Oqp8C8fcUkrtg36N6pJpKZqklf';
 
         const discordUserIdInput = document.getElementById('discordUserId');
         const consentCheckbox = document.getElementById('consentCheckbox');
         const verifyButton = document.getElementById('verifyButton');
         const statusMessage = document.getElementById('statusMessage');
+        const idError = document.getElementById('idError');
+        const pasteInstruction = document.getElementById('pasteInstruction');
+        
+        const freeformInput = document.getElementById('freeformInput');
+        const freeformStatusMessage = document.getElementById('freeformStatusMessage');
 
-        // Function to generate a basic browser fingerprint (HWID)
-        // This is a simple, non-robust fingerprint. For stronger fingerprinting,
-        // consider dedicated libraries (e.g., FingerprintJS, but be mindful of size for static pages).
+        const INVALID_ID_COOLDOWN_MS = 60 * 60 * 1000;
+        const TYPING_COOLDOWN_MS = 60 * 1000;
+        const TYPING_STRIKE_LIMIT = 3;
+
+        const COOLDOWN_KEY_PREFIX = 'verificationCooldown_';
+        const TYPING_COOLDOWN_KEY = 'typingViolationCooldown';
+        const TYPING_STRIKES_KEY = 'typingStrikes';
+
+        const FREEFORM_TYPING_COOLDOWN_KEY = 'freeformTypingViolationCooldown';
+        const FREEFORM_TYPING_STRIKES_KEY = 'freeformTypingStrikes';
+
+        let typingStrikesDiscordId = parseInt(localStorage.getItem(TYPING_STRIKES_KEY) || '0', 10);
+        let typingStrikesFreeform = parseInt(localStorage.getItem(FREEFORM_TYPING_STRIKES_KEY) || '0', 10);
+
         function generateBrowserFingerprint() {
             const userAgent = navigator.userAgent;
             const screenRes = `${screen.width}x${screen.height}x${screen.colorDepth}`;
@@ -88,18 +163,16 @@
             const components = [
                 userAgent, screenRes, plugins, languages, timezone,
                 platform, hardwareConcurrency, deviceMemory
-            ].filter(Boolean).join('|'); // Filter out null/undefined values
+            ].filter(Boolean).join('|');
 
-            // Simple hash function (FNV-1a) for demonstration
             let hash = 0x811c9dc5;
             for (let i = 0; i < components.length; i++) {
                 hash ^= components.charCodeAt(i);
                 hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
             }
-            return (hash >>> 0).toString(16); // Convert to unsigned hex string
+            return (hash >>> 0).toString(16);
         }
 
-        // Function to get public IP address
         async function getIpAddress() {
             try {
                 const response = await fetch('https://api.ipify.org?format=json');
@@ -111,10 +184,254 @@
             }
         }
 
-        // Enable/disable button based on consent and user ID input
-        function updateButtonState() {
-            verifyButton.disabled = !consentCheckbox.checked || discordUserIdInput.value.trim() === '';
+        function validateUserId(id) {
+            const numericRegex = /^\d+$/;
+            return numericRegex.test(id) && id.length >= 17 && id.length <= 20;
         }
+
+        function getRemainingCooldown(key, duration) {
+            const cooldownDataString = localStorage.getItem(key);
+            if (!cooldownDataString) return 0;
+
+            const cooldownData = JSON.parse(cooldownDataString);
+            const lastAttemptTime = new Date(cooldownData.timestamp).getTime();
+            const now = new Date().getTime();
+            const elapsed = now - lastAttemptTime;
+
+            return Math.max(0, duration - elapsed);
+        }
+
+        function setCooldown(key, duration) {
+            const cooldownData = {
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem(key, JSON.stringify(cooldownData));
+        }
+
+        function formatTime(ms) {
+            const totalSeconds = Math.ceil(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}m ${seconds}s`;
+        }
+
+        function updateButtonState() {
+            const userIdValue = discordUserIdInput.value.trim();
+            const consentChecked = consentCheckbox.checked;
+
+            let disableButton = true;
+            let currentStatusMessage = '';
+            let statusClass = '';
+
+            const invalidIdCooldownRemaining = userIdValue ? getRemainingCooldown(COOLDOWN_KEY_PREFIX + userIdValue, INVALID_ID_COOLDOWN_MS) : 0;
+            const typingCooldownDiscordIdRemaining = getRemainingCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS);
+            const typingCooldownFreeformRemaining = getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS);
+
+            idError.classList.add('hidden');
+            pasteInstruction.classList.add('hidden');
+
+            if (typingCooldownDiscordIdRemaining > 0) {
+                currentStatusMessage = `Typing blocked in Discord ID field. Please wait ${formatTime(typingCooldownDiscordIdRemaining)}.`;
+                statusClass = 'status-error';
+                disableButton = true;
+                discordUserIdInput.readOnly = true;
+            } else if (typingCooldownFreeformRemaining > 0) {
+                currentStatusMessage = `Typing blocked in demo field. Please wait ${formatTime(typingCooldownFreeformRemaining)}.`;
+                statusClass = 'status-error';
+                disableButton = true;
+                freeformInput.readOnly = true;
+            } else if (invalidIdCooldownRemaining > 0) {
+                currentStatusMessage = `Verification blocked for this ID. Please wait ${formatTime(invalidIdCooldownRemaining)}.`;
+                statusClass = 'status-error';
+                disableButton = true;
+                discordUserIdInput.readOnly = true;
+            } else {
+                if (userIdValue === '') {
+                    currentStatusMessage = '';
+                    statusClass = '';
+                    pasteInstruction.classList.remove('hidden');
+                    disableButton = true;
+                    discordUserIdInput.readOnly = true;
+                } else if (!validateUserId(userIdValue)) {
+                    idError.classList.remove('hidden');
+                    currentStatusMessage = 'Invalid Discord User ID. Must be 17-20 numbers.';
+                    statusClass = 'status-error';
+                    disableButton = true;
+                    discordUserIdInput.readOnly = true;
+                } else {
+                    currentStatusMessage = '';
+                    statusClass = '';
+                    idError.classList.add('hidden');
+                    discordUserIdInput.readOnly = false; 
+                    disableButton = false;
+                }
+
+                if (!consentChecked) {
+                    disableButton = true;
+                }
+                freeformInput.readOnly = false;
+            }
+
+            statusMessage.textContent = currentStatusMessage;
+            statusMessage.className = `text-center mt-5 text-xl ${statusClass}`;
+            verifyButton.disabled = disableButton;
+        }
+
+        discordUserIdInput.addEventListener('focus', () => {
+            if (!discordUserIdInput.value.trim() && getRemainingCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) === 0) {
+                pasteInstruction.classList.remove('hidden');
+            }
+        });
+
+        discordUserIdInput.addEventListener('blur', () => {
+            pasteInstruction.classList.add('hidden');
+        });
+
+        discordUserIdInput.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'v') {
+                return;
+            }
+
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+            if (allowedKeys.includes(event.key)) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (getRemainingCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) > 0) {
+                return;
+            }
+
+            typingStrikesDiscordId++;
+            localStorage.setItem(TYPING_STRIKES_KEY, typingStrikesDiscordId);
+            
+            pasteInstruction.classList.remove('hidden');
+            pasteInstruction.textContent = `Please paste your Discord User ID here using long-press (mobile) or Ctrl+V (desktop) / Cmd+V (Mac). Typing is not allowed. Strikes: ${typingStriakesDiscordId}/${TYPING_STRIKE_LIMIT}`;
+            pasteInstruction.className = 'text-yellow-400 text-sm mt-2';
+
+            if (typingStrikesDiscordId >= TYPING_STRIKE_LIMIT) {
+                setCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS);
+                typingStrikesDiscordId = 0;
+                localStorage.setItem(TYPING_STRIKES_KEY, typingStrikesDiscordId);
+                updateButtonState();
+            }
+        });
+
+        discordUserIdInput.addEventListener('paste', (event) => {
+            const pastedText = event.clipboardData.getData('text');
+            if (validateUserId(pastedText)) {
+                typingStrikesDiscordId = 0;
+                localStorage.setItem(TYPING_STRIKES_KEY, typingStrikesDiscordId);
+                pasteInstruction.classList.add('hidden');
+                idError.classList.add('hidden');
+            } else {
+                event.preventDefault();
+                statusMessage.textContent = 'Pasted content is not a valid Discord User ID. Please paste 17-20 numbers only.';
+                statusMessage.className = 'text-center mt-5 text-xl status-error';
+                setCooldown(COOLDOWN_KEY_PREFIX + pastedText, INVALID_ID_COOLDOWN_MS);
+                updateButtonState();
+            }
+        });
+
+        freeformInput.addEventListener('focus', () => {
+            if (getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) === 0) {
+                freeformStatusMessage.textContent = 'Paste a Discord ID here. Typing is blocked.';
+                freeformStatusMessage.className = 'text-center mt-2 text-base text-yellow-400';
+            }
+        });
+
+        freeformInput.addEventListener('blur', () => {
+            if (getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) === 0) {
+                freeformStatusMessage.textContent = '';
+            }
+        });
+
+        freeformInput.addEventListener('keydown', (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'v') {
+                return;
+            }
+
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+            if (allowedKeys.includes(event.key)) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) > 0) {
+                return;
+            }
+
+            typingStrikesFreeform++;
+            localStorage.setItem(FREEFORM_TYPING_STRIKES_KEY, typingStrikesFreeform);
+            
+            freeformStatusMessage.textContent = `Typing detected! Strikes: ${typingStrikesFreeform}/${TYPING_STRIKE_LIMIT}. Use paste.`;
+            freeformStatusMessage.className = 'text-center mt-2 text-base text-red-400';
+
+            if (typingStrikesFreeform >= TYPING_STRIKE_LIMIT) {
+                setCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS);
+                typingStrikesFreeform = 0;
+                localStorage.setItem(FREEFORM_TYPING_STRIKES_KEY, typingStrikesFreeform);
+                updateButtonState();
+            }
+        });
+
+        freeformInput.addEventListener('paste', (event) => {
+            const pastedText = event.clipboardData.getData('text');
+            event.preventDefault(); 
+
+            const numericRegex = /^\d+$/;
+            const isValidPasteContent = numericRegex.test(pastedText) && pastedText.length > 0;
+
+            if (isValidPasteContent) {
+                if (validateUserId(pastedText)) {
+                    if (discordUserIdInput.value.trim() === '') {
+                        discordUserIdInput.value = pastedText;
+                        freeformInput.value = '';
+                        
+                        typingStrikesFreeform = 0;
+                        localStorage.setItem(FREEFORM_TYPING_STRIKES_KEY, typingStrikesFreeform);
+                        localStorage.removeItem(FREEFORM_TYPING_COOLDOWN_KEY);
+
+                        typingStrikesDiscordId = 0;
+                        localStorage.setItem(TYPING_STRIKES_KEY, typingStrikesDiscordId);
+                        localStorage.removeItem(TYPING_COOLDOWN_KEY);
+
+                        freeformStatusMessage.textContent = 'Valid ID pasted! It has been moved to the Discord User ID field.';
+                        freeformStatusMessage.className = 'text-center mt-2 text-base status-success';
+                        
+                        statusMessage.textContent = ''; 
+                        statusMessage.className = '';
+                        idError.classList.add('hidden');
+                        pasteInstruction.classList.add('hidden');
+                    } else {
+                        freeformInput.value = pastedText;
+                        freeformStatusMessage.textContent = 'Valid ID pasted! (First field already contains an ID).';
+                        freeformStatusMessage.className = 'text-center mt-2 text-base status-warning';
+                        typingStrikesFreeform = 0;
+                        localStorage.setItem(FREEFORM_TYPING_STRIKES_KEY, typingStrikesFreeform);
+                        localStorage.removeItem(FREEFORM_TYPING_COOLDOWN_KEY);
+                    }
+                } else {
+                    freeformInput.value = pastedText;
+                    statusMessage.textContent = 'Pasted numbers are not a valid Discord User ID length (17-20 digits).';
+                    statusMessage.className = 'text-center mt-5 text-xl status-error';
+                    setCooldown(COOLDOWN_KEY_PREFIX + pastedText, INVALID_ID_COOLDOWN_MS);
+                    freeformStatusMessage.textContent = 'Invalid ID length. Try again.';
+                    freeformStatusMessage.className = 'text-center mt-2 text-base status-error';
+                }
+            } else {
+                freeformInput.value = pastedText;
+                statusMessage.textContent = 'Pasted content is not valid (numbers only, please).';
+                statusMessage.className = 'text-center mt-5 text-xl status-error';
+                setCooldown(COOLDOWN_KEY_PREFIX + pastedText, INVALID_ID_COOLDOWN_MS);
+                freeformStatusMessage.textContent = 'Invalid content pasted. Try again.';
+                freeformStatusMessage.className = 'text-center mt-2 text-base status-error';
+            }
+            updateButtonState();
+        });
+
 
         consentCheckbox.addEventListener('change', updateButtonState);
         discordUserIdInput.addEventListener('input', updateButtonState);
@@ -122,21 +439,28 @@
         verifyButton.addEventListener('click', async () => {
             const discordUserId = discordUserIdInput.value.trim();
 
-            if (discordUserId === '') {
-                statusMessage.textContent = 'Please enter your Discord User ID.';
-                statusMessage.className = 'text-center mt-4 text-sm text-red-400';
+            if (!validateUserId(discordUserId)) {
+                setCooldown(COOLDOWN_KEY_PREFIX + discordUserId, INVALID_ID_COOLDOWN_MS);
+                updateButtonState();
                 return;
             }
 
             if (!consentCheckbox.checked) {
                 statusMessage.textContent = 'You must consent to data collection to proceed.';
-                statusMessage.className = 'text-center mt-4 text-sm text-red-400';
+                statusMessage.className = 'text-center mt-5 text-xl status-error';
+                return;
+            }
+
+            if (getRemainingCooldown(COOLDOWN_KEY_PREFIX + discordUserId, INVALID_ID_COOLDOWN_MS) > 0 ||
+                getRemainingCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) > 0 ||
+                getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) > 0) {
+                updateButtonState();
                 return;
             }
 
             statusMessage.textContent = 'Collecting data and sending... Please wait.';
-            statusMessage.className = 'text-center mt-4 text-sm text-yellow-400';
-            verifyButton.disabled = true; // Disable button during processing
+            statusMessage.className = 'text-center mt-5 text-xl status-warning';
+            verifyButton.disabled = true;
 
             const ipAddress = await getIpAddress();
             const hwid = generateBrowserFingerprint();
@@ -147,7 +471,7 @@
                 ipAddress: ipAddress,
                 hwid: hwid,
                 timestamp: timestamp,
-                pageSource: 'Discord Verification Page' // Identify source
+                pageSource: 'Discord Verification Page'
             };
 
             try {
@@ -161,7 +485,7 @@
                         embeds: [{
                             title: "New Verification Attempt",
                             description: `A user has attempted to verify.`,
-                            color: 5814783, // Discord purple color
+                            color: 5814783,
                             fields: [
                                 { name: "Discord User ID", value: `\`${discordUserId}\``, inline: false },
                                 { name: "IP Address", value: `\`${ipAddress}\``, inline: false },
@@ -175,23 +499,27 @@
 
                 if (response.ok) {
                     statusMessage.textContent = 'Verification data sent successfully! Please check Discord.';
-                    statusMessage.className = 'text-center mt-4 text-sm text-green-400';
+                    statusMessage.className = 'text-center mt-5 text-xl status-success';
                 } else {
                     const errorText = await response.text();
                     console.error('Webhook failed:', response.status, errorText);
                     statusMessage.textContent = `Failed to send data. Error: ${response.status}. Please try again later.`;
-                    statusMessage.className = 'text-center mt-4 text-sm text-red-400';
+                    statusMessage.className = 'text-center mt-5 text-xl status-error';
                 }
             } catch (error) {
                 console.error('Network error:', error);
                 statusMessage.textContent = 'Network error. Please check your connection and try again.';
-                statusMessage.className = 'text-center mt-4 text-sm text-red-400';
+                statusMessage.className = 'text-center mt-5 text-xl status-error';
             } finally {
-                verifyButton.disabled = false; // Re-enable button
+                if (getRemainingCooldown(COOLDOWN_KEY_PREFIX + discordUserId, INVALID_ID_COOLDOWN_MS) === 0 &&
+                    getRemainingCooldown(TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) === 0 &&
+                    getRemainingCooldown(FREEFORM_TYPING_COOLDOWN_KEY, TYPING_COOLDOWN_MS) === 0) {
+                    verifyButton.disabled = false;
+                }
             }
         });
 
-        // Initial state update
+        setInterval(updateButtonState, 1000);
         updateButtonState();
     </script>
 </body>
